@@ -16,7 +16,17 @@
         <br>
         <br>
         <br>
-        Form
+        <form action="{% url 'login' %}" method="POST" >
+          {% csrf_token %}
+          <div class="mb-3">
+            <input type="text" class="form-control" name="username" placeholder="Enter Your Username Here">
+          </div>
+          <div class="mb-3">
+      
+            <input type="password" class="form-control" name="password" placeholder="Enter Your Password Here">
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
         <br>
         <br>
       </div>

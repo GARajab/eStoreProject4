@@ -76,6 +76,7 @@ def register_user(request):
             form.save()
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password1"]
+            password = form.cleaned_data["password2"]
 
             user = authenticate(username=username, password=password)
             login(request, user)

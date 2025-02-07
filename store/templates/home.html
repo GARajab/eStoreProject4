@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 {% block content %}
 <!-- Header-->
@@ -11,6 +10,44 @@
         </div>
     </div>
 </header>
+<style>
+    .productImgs {
+        display: block;
+        height: 12vw;
+        max-width: 100%;
+        min-width: 100px;
+        min-height: 100px;
+        object-fit: contain;
+        margin: 0 auto;
+        /* Center the image horizontally */
+    }
+
+    .card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 20px;
+    }
+
+    .card-body {
+        flex-grow: 1;
+        /* Ensure the card body takes up remaining space */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        /* Align content vertically */
+    }
+
+    .card-footer {
+        flex-shrink: 0;
+        /* Prevent footer from growing */
+    }
+
+    .text-center {
+        width: 100%;
+        /* Ensure text is centered properly */
+    }
+</style>
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
@@ -18,33 +55,27 @@
             <div class="col mb-5">
                 <div class="card h-100">
                     <!-- Product image-->
-                    <img class="card-img-top img-fixed-size" src="{{product.image.url}}" alt="..." />
+                    <img class="productImgs" src="{{product.image.url}}" alt="{{product.name}}" />
                     <!-- Product details-->
                     <div class="card-body p-4">
                         <div class="text-center">
                             <!-- Product name-->
                             <h5 class="fw-bolder">{{product.name}}</h5>
                             <!-- Product price-->
-                            ${{product.price}}
-                            <br>
-                            {{product.description}}
-                            <br>
-                            In: {{product.category}}
+                            <p class="mb-0">${{product.price}}</p>
                         </div>
                     </div>
                     <!-- Product actions-->
                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">View options</a></div>
+                        <div class="text-center">
+                            <a class="btn btn-outline-dark mt-auto" href="{% url 'product' product.id %}">View
+                                Product</a>
+                        </div>
                     </div>
                 </div>
             </div>
             {% endfor %}
-            <!-- Product actions-->
-
         </div>
     </div>
-
-    </div>
-    </div>
 </section>
-{%endblock%}
+{% endblock %}

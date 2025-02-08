@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .forms import SignUpForm
+from .forms import RegisterForm, SignUpForm
 from django import forms
 
 
@@ -24,7 +24,7 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, ("You Are Logged In Successfully"))
+            messages.success(request, ("Welcome Back " + username))
             return redirect("home")
         else:
             messages.warning(request, ("There Was An Error Try Again Later"))
@@ -68,24 +68,36 @@ def product(request, pk):
     return render(request, "product.html", {"product": product})
 
 
-def register_user(request):
-    form = SignUpForm()
+def register(request):
     if request.method == "POST":
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data["username"]
-            password = form.cleaned_data["password1"]
+        username = request.POST["username"]
+        first_name = request.POST["firstName"]
+        last_name = request.POST["lastName"]
+        email = request.POST["email"]
+        password = request.POST["password"]
 
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.success(request, ("You Have Registered Successfully!!"))
-                return redirect("home")
-        else:
-            messages.error(
-                request, ("Sorry There Was Something Wrong, Please Try Again!!")
-            )
+        # Validate the data (you can implement more thorough validation)
+        if User.objects.filter(username=username).exists():
+            messages.error(request, ("Username is already taken."))
+            return redirect("register")
+        if User.objects.filter(email=email).exists():
+            messages.error(request, _("An account with this email already exists."))
             return redirect("register")
 
-    return render(request, "register.html", {"form": form})
+        # Create a new user
+        try:
+            user = User.objects.create_user(
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                password=password,
+            )
+            user.save()
+            messages.success(request, ("Registration successful! You can now log in."))
+            return redirect("login")
+        except forms.ValidationError as e:
+            messages.error(request, ("Invalid input: ") + str(e))
+            return redirect("register")
+
+    return render(request, "register.html")

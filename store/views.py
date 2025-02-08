@@ -73,18 +73,17 @@ def register_user(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
             username = form.cleaned_data["username"]
             password = form.cleaned_data["password1"]
-            password = form.cleaned_data["password2"]
 
             user = authenticate(username=username, password=password)
-            login(request, user)
-            # add celepration
-            messages.success(request, ("You Have Registered Successfully!!"))
-            return redirect("home")
+            if user is not None:
+                login(request, user)
+                messages.success(request, ("You Have Registered Successfully!!"))
+                return redirect("home")
         else:
-            messages.success(
+            messages.error(
                 request, ("Sorry There Was Something Wrong, Please Try Again!!")
             )
             return redirect("register")

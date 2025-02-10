@@ -51,13 +51,15 @@ def cart_update(request):
         quantity = request.POST.get("quantity")
 
         if not product_id or not quantity:
-            return HttpResponseBadRequest("Missing product_id or quantity")
+            messages.success(request, "Missing product_id or quantity.")
+            return messages
 
         try:
             product_id = int(product_id)
             quantity = int(quantity)
         except (ValueError, TypeError):
-            return HttpResponseBadRequest("Invalid product_id or quantity")
+            messages.success(request, "Missing product_id or quantity.")
+            return messages
 
         product = get_object_or_404(Product, id=product_id)
         cart = Cart(request)
@@ -66,4 +68,9 @@ def cart_update(request):
         # Redirect to the cart view after update
         return redirect("cart_summary")  # Change 'cart_detail' to your actual view name
 
-    return HttpResponseBadRequest("Invalid request method or missing action")
+    messages.success(request, "Invalid request method or missing action")
+    return messages
+
+
+def checkout(request):
+    return render(request, "checkout.html")

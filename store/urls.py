@@ -10,5 +10,4 @@ urlpatterns = [
     path("register/", views.register, name="register"),
     path("product/<int:pk>", views.product, name="product"),
     path("category/<str:rjb>", views.category, name="category"),
-    path("checkout/", views.checkout, name="checkout"),
 ]

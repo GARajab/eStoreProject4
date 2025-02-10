@@ -101,3 +101,7 @@ def register(request):
             return redirect("register")
 
     return render(request, "register.html")
+
+
+def checkout(request):
+    return render(request, "check.html")

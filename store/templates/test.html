@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Product Details Page</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <style>
+        .product-image {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            color: #28a745;
+        }
+
+        .product-description {
+            font-size: 1rem;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="container my-5">
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="https://via.placeholder.com/500" alt="Product" class="product-image img-fluid">
+                </div>
+                <div class="col-md-6">
+                    <h2 class="product-title">Product Name</h2>
+                    <div class="price">$99.99</div>
+                    <p class="product-description">This is a brief description of the product that highlights its features and benefits. It should provide the user with enough information to make an informed purchase decision.</p>
+                    <div>
+                        <h5>Quantity</h5>
+                        <input
+                            type="number"
+                            class="form-control"
+                            value="1"
+                            min="1"
+                        >
+                    </div>
+                    <button class="btn btn-primary mt-3">Add to Cart</button>
+                    <button class="btn btn-secondary mt-3">Buy Now</button>
+                    <h5 class="mt-4">Product Details</h5>
+                    <ul class="list-unstyled">
+                        <li>
+                            <strong>Category:</strong> Electronics
+                        </li>
+                        <li>
+                            <strong>Brand:</strong> Brand Name
+                        </li>
+                        <li>
+                            <strong>SKU:</strong> 123456
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col">
+                    <h4>Customer Reviews</h4>
+                    <div class="media mb-3">
+                        <img src="https://via.placeholder.com/40" class="mr-3" alt="User">
+                        <div class="media-body">
+                            <h5 class="mt-0">User Name</h5>
+                            <p>Great product! I'm very satisfied with my purchase.</p>
+                        </div>
+                    </div>
+                    <div class="media mb-3">
+                        <img src="https://via.placeholder.com/40" class="mr-3" alt="User">
+                        <div class="media-body">
+                            <h5 class="mt-0">User Name</h5>
+                            <p>Not what I expected but still a good buy.</p>
+                        </div>
+                    </div>
+                    <div class="media mb-3">
+                        <img src="https://via.placeholder.com/40" class="mr-3" alt="User">
+                        <div class="media-body">
+                            <h5 class="mt-0">User Name</h5>
+                            <p>Excellent quality and fast shipping!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
+</html>

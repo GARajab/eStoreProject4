@@ -69,10 +69,12 @@ WSGI_APPLICATION = "eStore.wsgi.application"
 # "NAME": "estore",
 DATABASES = {
     "default": {
-        # "ENGINE": "django.db.backends.sqlite3",
-        # "NAME": BASE_DIR / "db.sqlite3",
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "estore",
+        "USER": "mohamedrajab",
+        "PASSWORD": "Rajab@123",
+        "HOST": "localhost",
+        "PORT": "5432",
     }
 }
 

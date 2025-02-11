@@ -307,10 +307,14 @@
                         {% endif %}
                         {% endwith %}
                     </div>
+                    {% if cart %}
                     <!-- <button class="btn">CHECKOUT</button> -->
                     <form action="{% url 'checkout' %}" method="get">
-                        <button type="submit">CHECKOUT</button>
+                        <button type="submit" class="btn btn-success">CHECKOUT</button>
                     </form>
+                    {% else %}
+                    <button type="submit" class="btn btn-success" disabled">CHECKOUT</button>
+                    {% endif %}
                 </div>
             </div>
         </div>

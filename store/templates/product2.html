@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  .toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: none; /* Hide the toast by default */
+  }
+</style>
+<div class="container">
+    <div class="row">
+        <center>
+            <div class="col-8">
+                <br>
+                <br>
+                <br>
+                <div class="card mb-3" style="max-width: 540px;">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">{{ product.description }}</p>
+                                <p class="card-text">
+                                    <small class="text-body-secondary">Last updated 3 mins ago</small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'home' %}" class="btn btn-primary">Back To Home</a>
+                <button
+                    class="btn btn-primary"
+                    value="{{ product.id }}"
+                    type="button"
+                    id="add-cart"
+                >Add To Cart</button>
+                <br>
+                <br>
+            </div>
+        </center>
+    </div>
+</div>
+<div
+    class="toast align-items-center text-bg-success border-0"
+    id="toast"
+    role="alert"
+    aria-live="assertive"
+    aria-atomic="true"
+    style="opacity: 0.7;"
+>
+    <div class="toast-header">
+        <strong class="me-auto" id="toast-title">Success!</strong>
+    </div>
+    <div class="toast-body" id="toast-body">
+        "{{ product.name }}" added to cart!
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script>
+  $(document).on('click', '#add-cart', function(e) {
+    e.preventDefault();
+    $.ajax({
+      type: "POST",
+      url: '{% url "cart_add" %}', // Update with your URL to add to cart
+      data: {
+        product_id: this.value,
+        csrfmiddlewaretoken: '{{ csrf_token }}',
+        action: 'post'
+      },
+      success: function(json) {
+        document.getElementById("cart_quantity").textContent = json.qty; // Update the cart quantity
+        const productName = json.product_name; // Get the product name from the server response
+
+        // Update the toast with the product details
+        $('#toast-title').text('Product Added: ' + productName);
+        $('#toast-body').text(productName + ' has been added to your cart!');
+
+        // Show toast notification
+        $('#toast').toast('show');
+        
+        // Hide the toast after 3 seconds
+        setTimeout(() => {
+          $('#toast').toast('hide');
+        }, 3000);
+      },
+      error: function(xhr, errmsg, err) {
+        console.error(xhr.responseText); // Improved error logging
+      }
+    });
+  });
+</script>
+
+{% endblock %}

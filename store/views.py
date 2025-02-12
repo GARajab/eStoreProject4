@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .forms import RegisterForm, SignUpForm
 from django import forms
+import random
 
 
 def home(request):
@@ -64,8 +65,11 @@ def category(request, rjb):
 
 
 def product(request, pk):
+    a = random.randint(1, 4)
+    print(a)
     product = Product.objects.get(id=pk)
-    return render(request, "product.html", {"product": product})
+    products = Product.objects.all()[1:6]
+    return render(request, "product.html", {"product": product, "products": products})
 
 
 def register(request):

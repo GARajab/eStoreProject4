@@ -1,130 +1,127 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<style>
-  .toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 9999;
-    display: none; /* Hide the toast by default */
-  }
-</style>
-<div class="container">
-    <div class="row">
-        <center>
-            <div class="col-8">
-                <br>
-                <br>
-                <br>
-                <div class="card mb-3" style="max-width: 540px;">
-                    <div class="row g-0">
-                        <div class="col-md-4">
-                            <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="...">
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - Product Details</title>
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Product section-->
+    <section class="py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="row gx-4 gx-lg-5 align-items-center">
+                <div class="col-md-6">
+                    <img class="card-img-top mb-5 mb-md-0" src="{{ product.image.url }}" alt="{{ product.name }}" />
+                </div>
+                <div class="col-md-6">
+                    <div class="small mb-1">SKU: BST-498</div>
+                    <h1 class="display-5 fw-bolder">{{ product.name }}</h1>
+                    <div class="fs-5 mb-5">
+                        <span class="">${{ product.price }}</span>
+                    </div>
+                    <p class="lead">{{ product.description }}</p>
+                    <div class="d-flex">
+                        <input class="form-control text-center me-3" id="inputQuantity" type="number" value="1" style="max-width: 3rem" />
+                        <button class="btn btn-outline-dark flex-shrink-0" value="{{ product.id }}" id="add-cart" type="button">
+                            <i class="bi-cart-fill me-1"></i>
+                            Add to cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related items section-->
+    <section class="py-5 bg-light">
+        <div class="container px-4 px-lg-5 mt-5">
+            <h2 class="fw-bolder mb-4">Related products</h2>
+            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                {% for product in products %}
+                <div class="col mb-5">
+                    <div class="card h-100">
+                        <!-- Product image-->
+                        <img class="card-img-top" src="{{ product.image.url }}" alt="{{ product.name }}" style="padding: 30px;"/>
+                        <!-- Product details-->
+                        <div class="card-body p-4">
+                            <div class="text-center" style="width: 100px;">
+                                <!-- Product name-->
+                                <h5 class="fw-bolder">{{ product.name }}</h5>
+                                <!-- Product reviews-->
+                                <div class="d-flex justify-content-center small text-warning mb-2">
+                                    <div class="bi-star-fill"></div>
+                                    <div class="bi-star-fill"></div>
+                                    <div class="bi-star-fill"></div>
+                                    <div class="bi-star-fill"></div>
+                                    <div class="bi-star-fill"></div>
+                                </div>
+                                <!-- Product price-->
+                                ${{ product.price }}
+                            </div>
                         </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ product.name }}</h5>
-                                <p class="card-text">{{ product.description }}</p>
-                                <p class="card-text">
-                                    <small class="text-body-secondary">Last updated 3 mins ago</small>
-                                </p>
+                        <!-- Product actions-->
+                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                            <div class="text-center">
+                                <a class="btn btn-outline-dark mt-auto" href="">View details</a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <a href="{% url 'home' %}" class="btn btn-primary">Back To Home</a>
-                <button
-                    class="btn btn-primary"
-                    value="{{ product.id }}"
-                    type="button"
-                    id="add-cart"
-                >Add To Cart</button>
-                <br>
-                <br>
+                {% empty %}
+                <div class="col-12">
+                    <p class="text-center">No related products found.</p>
+                </div>
+                {% endfor %}
             </div>
-        </center>
-    </div>
-</div>
-<div
-    class="toast align-items-center text-bg-success border-0"
-    id="toast"
-    role="alert"
-    aria-live="assertive"
-    aria-atomic="true"
-    style="opacity: 0.7;"
->
-    <div class="toast-header">
-        <strong class="me-auto" id="toast-title">Success!</strong>
-    </div>
-    <div class="toast-body" id="toast-body">
-        "{{ product.name }}" added to cart!
-    </div>
-</div>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-<script>
-  $(document).on('click', '#add-cart', function(e) {
-    e.preventDefault();
-    $.ajax({
-      type: "POST",
-      url: '{% url "cart_add" %}', // Update with your URL to add to cart
-      data: {
-        product_id: this.value,
-        csrfmiddlewaretoken: '{{ csrf_token }}',
-        action: 'post'
-      },
-      success: function(json) {
-        document.getElementById("cart_quantity").textContent = json.qty; // Update the cart quantity
-        const productName = json.product_name; // Get the product name from the server response
+        </div>
+    </section>
 
-        // Update the toast with the product details
-        $('#toast-title').text('Product Added: ' + productName);
-        $('#toast-body').text(productName + ' has been added to your cart!');
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
 
-        // Show toast notification
-        $('#toast').toast('show');
-        
-        // Hide the toast after 3 seconds
-        setTimeout(() => {
-          $('#toast').toast('hide');
-        }, 3000);
-      },
-      error: function(xhr, errmsg, err) {
-        console.error(xhr.responseText); // Improved error logging
-      }
-    });
-  });
-</script>
-<script>
-  $(document).on('click', '#add-cart', function(e) {
-    e.preventDefault();
-    $.ajax({
-      type: "POST",
-      url: '{% url "cart_add" %}', // Update with your URL to add to cart
-      data: {
-        product_id: this.value,
-        csrfmiddlewaretoken: '{{ csrf_token }}',
-        action: 'post'
-      },
-      success: function(json) {
-        document.getElementById("cart_quantity").textContent = json.qty; // Update the cart quantity
-        const productName = json.product_name; // Get the product name from the server response
+    <!-- Custom JS for adding to cart -->
+    <script>
+        $(document).on('click', '#add-cart', function(e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: '{% url "cart_add" %}', // Update with your URL to add to cart
+                data: {
+                    product_id: this.value,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    action: 'post'
+                },
+                success: function(json) {
+                    document.getElementById("cart_quantity").textContent = json.qty; // Update the cart quantity
+                    const productName = json.product_name; // Get the product name from the server response
 
-        // Update the toast with the product details
-        $('#toast-title').text('Product Added: ' + productName);
-        $('#toast-body').text(productName + ' has been added to your cart!');
+                    // Update the toast with the product details
+                    $('#toast-title').text('Product Added: ' + productName);
+                    $('#toast-body').text(productName + ' has been added to your cart!');
 
-        // Show toast notification
-        $('#toast').toast('show');
-        
-        // Hide the toast after 3 seconds
-        setTimeout(() => {
-          $('#toast').toast('hide');
-        }, 3000);
-      },
-      error: function(xhr, errmsg, err) {
-        console.error(xhr.responseText); // Improved error logging
-      }
-    });
-  });
-</script>
+                    // Show toast notification
+                    $('#toast').toast('show');
+
+                    // Hide the toast after 3 seconds
+                    setTimeout(() => {
+                        $('#toast').toast('hide');
+                    }, 3000);
+                },
+                error: function(xhr, errmsg, err) {
+                    console.error(xhr.responseText); // Improved error logging
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
 {% endblock %}

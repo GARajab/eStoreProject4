@@ -194,7 +194,7 @@
             <div class="container py-4">
                 <nav class="d-flex">
                     <h6 class="mb-0">
-                        <a href="" class="text-white-50">Home</a>
+                        <a href="/" class="text-white-50">Home</a>
                         <span class="text-white-50 mx-2"> ></span>
                         <a href="" class="text-white">
                             <u>2. Shopping cart</u>
@@ -292,8 +292,6 @@
                         <select>
                             <option class="text-muted">Standard-Delivery- $ 5.00</option>
                         </select>
-                        <p>GIVE CODE</p>
-                        <input id="code" placeholder="Enter your code">
                     </form>
                     <div class="row" style="border-top: 1px solid rgba(0,0,0,.1); padding: 2vh 0;">
                         <div class="col">TOTAL PRICE</div>
@@ -313,7 +311,7 @@
                         <button type="submit" class="btn btn-success">CHECKOUT</button>
                     </form>
                     {% else %}
-                    <button type="submit" class="btn btn-success" disabled">CHECKOUT</button>
+                    <button type="submit" class="btn btn-success" disabled data-mdb-ripple-init>CHECKOUT</button>
                     {% endif %}
                 </div>
             </div>

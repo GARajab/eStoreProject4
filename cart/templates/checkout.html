@@ -13,7 +13,7 @@
                     <!-- Breadcrumb -->
                     <nav class="d-flex">
                         <h6 class="mb-0">
-                            <a href="" class="text-white-50">Home</a>
+                            <a href="/" class="text-white-50">Home</a>
                             <span class="text-white-50 mx-2"> ></span>
                             <a href="/cart/" class="text-white-50">2. Shopping cart</a>
                             <span class="text-white-50 mx-2"> ></span>
@@ -253,21 +253,17 @@
                         <div class="ms-lg-4 mt-4 mt-lg-0" style="max-width: 320px;">
                             <h6 class="mb-3">Summary</h6>
                             <div class="d-flex justify-content-between">
-                                <p class="mb-2">Total price:</p>
-                                <p class="mb-2 text-primary">$ {{ cart.get_total_price }}</p>
+                                <p class="mb-2">Total price <span style="font-size: small;">*include Shipping</span>:</p>
+                                <p class="mb-2 text-primary">$ {{ cart.get_total_price|add:5 }}</p>
                             </div>
                             <div class="d-flex justify-content-between">
                                 <p class="mb-2">Discount:</p>
                                 <p class="mb-2 text-success">- $60.00</p>
                             </div>
-                            <div class="d-flex justify-content-between">
-                                <p class="mb-2">Shipping cost:</p>
-                                <p class="mb-2 text-danger">+ $14.00</p>
-                            </div>
                             <hr>
                             <div class="d-flex justify-content-between">
                                 <p class="mb-2">Total price:</p>
-                                <p class="mb-2 fw-bold">$ {{ cart.get_total_price|add:-46 }}</p>
+                                <p class="mb-2 fw-bold">$ {{ cart.get_total_price|add:-60 }}</p>
                             </div>
                             <div class="input-group mt-3 mb-4">
                                 <input
@@ -275,8 +271,40 @@
                                     class="form-control border"
                                     name=""
                                     placeholder="Promo code"
+                                    id="promoCodeInput"
                                 >
-                                <button class="btn btn-light text-primary border">Apply</button>
+                                <button class="btn btn-light text-primary border" onclick="applyPromoCode()" id="applyButton">Apply</button>
+                                <script>
+                                    function applyPromoCode() {
+                                        // Get the promo code value from the input field
+                                        const promoCode = document.getElementById('promoCodeInput').value;
+
+                                        // Get the current total price from the page (remove the '$' sign and convert to a number)
+                                        const totalPriceElement = document.querySelector('.fw-bold');
+                                        let totalPrice = parseFloat(totalPriceElement.textContent.replace('$ ', ''));
+
+                                        // Define discount rules (you can modify this as needed)
+                                        let discount = 0;
+                                        if (promoCode === "mohsen") {
+                                        discount = 60;
+                                        } else if (promoCode === "salman") {
+                                        discount = 120;
+                                        }
+
+                                        // Calculate the new total price
+                                        const newTotalPrice = totalPrice - discount;
+
+                                        // Update the total price displayed on the page
+                                        totalPriceElement.textContent = `$ ${newTotalPrice}`;
+                                        // Disable the "Apply" button after the promo code is applied
+                                        const applyButton = document.getElementById('applyButton');
+                                        applyButton.disabled = true;
+                                        applyButton.textContent = "Applied"; 
+                                        applyButton.classList.remove('text-primary'); 
+                                        applyButton.classList.add('text-muted'); 
+                                        
+                                    }
+                                </script>
                             </div>
                             <hr>
                             {% if cart %}
@@ -314,11 +342,10 @@
                         <div class="col-12 col-lg-3 col-sm-12 mb-2">
                             <!-- Content -->
                             <a href="https://mdbootstrap.com/" target="_blank" class="text-white h2">
-                                MDB
+                                Rajab
                             </a>
-                            <p class="mt-1 text-white">
-                                © 2023 Copyright: MDBootstrap.com
-                            </p>
+                            <p class="mt-1 text-white">                         © 2025 Copyright: MDBootstrap.com
+                            </p>    
                         </div>
                         <!-- Grid column -->
                         <!-- Grid column -->

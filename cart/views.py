@@ -74,3 +74,11 @@ def cart_update(request):
 
 def checkout(request):
     return render(request, "checkout.html")
+
+
+def input_view(request):
+    if request.method == "POST":
+        user_input = request.POST.get("user_input")
+        response_message = f"You entered: {user_input}"  # Your processing logic here
+        return JsonResponse({"message": response_message})
+    return render(request, "myapp/index.html")

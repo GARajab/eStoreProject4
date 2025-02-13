@@ -11,15 +11,32 @@ def cart_summary(request):
     return render(request, "cart_summary.html", {"cart": cart})
 
 
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.contrib import messages
+
+
 def cart_add(request):
     if request.method == "POST" and request.POST.get("action") == "post":
         product_id = int(request.POST.get("product_id"))
+        quantity = int(
+            request.POST.get("quantity", 1)
+        )  # Default to 1 if quantity is not provided
         product = get_object_or_404(Product, id=product_id)
+
         cart = Cart(request)
-        cart.add(product=product)
+        cart.add(product=product, quantity=quantity)
+
         cart_quantity = len(cart)
-        messages.success(request, f"{product.name} has been added to your cart.")
-        return JsonResponse({"qty": cart_quantity, "product_name": product.name})
+
+        return JsonResponse(
+            {
+                "success": True,
+                "qty": cart_quantity,
+                "product_name": product.name,
+                "quantity_added": quantity,
+            }
+        )
 
     return HttpResponseBadRequest("Invalid request method or missing action")
 

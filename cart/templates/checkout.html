@@ -321,7 +321,7 @@
                                     <p style="font-size: 12px;">
                                         {{ item.product.description }}
                                     </p>
-                                    <div class="price text-muted" style="font-size: 12px;">Total: ${{item.product.price}}</div>
+                                    <div class="price text-muted" style="font-size: 12px;">Total: ${{item.total_price|floatformat:2}}</div>
                                 </div>
                             </div>
                             {% endfor %}

@@ -68,7 +68,7 @@ def product(request, pk):
     a = random.randint(1, 4)
     print(a)
     product = Product.objects.get(id=pk)
-    products = Product.objects.all()[1:6]
+    products = Product.objects.all()[1:4]
     return render(request, "product.html", {"product": product, "products": products})
 
 

@@ -113,12 +113,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
-STATICFILES_DIRS = ["static/"]
-# Default primary key field type
-MEDIA_URL = "media/"
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]  # Recommended
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")  # Add this line
+
+# Media files (uploaded by users)
+MEDIA_URL = "/media/"  # This is generally what you want
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CART_SESSION_ID = "cart"

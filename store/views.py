@@ -60,7 +60,7 @@ def category(request, rjb):
         )
 
     except Category.DoesNotExist:
-        messages.error(request, ("This Category Is Not Available"))
+        messages.warning(request, ("This Category Is Not Available"))
         return redirect("home")
 
 
@@ -82,10 +82,10 @@ def register(request):
 
         # Validate the data (you can implement more thorough validation)
         if User.objects.filter(username=username).exists():
-            messages.error(request, ("Username is already taken."))
+            messages.warning(request, ("Username is already taken."))
             return redirect("register")
         if User.objects.filter(email=email).exists():
-            messages.error(request, _("An account with this email already exists."))
+            messages.warning(request, ("An account with this email already exists."))
             return redirect("register")
 
         # Create a new user
@@ -101,7 +101,7 @@ def register(request):
             messages.success(request, ("Registration successful! You can now log in."))
             return redirect("login")
         except forms.ValidationError as e:
-            messages.error(request, ("Invalid input: ") + str(e))
+            messages.warning(request, ("Invalid input: ") + str(e))
             return redirect("register")
 
     return render(request, "register.html")

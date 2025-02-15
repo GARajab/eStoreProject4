@@ -5,7 +5,6 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="{% static 'css/mdb.min.css' %}">
-        <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <style>
         body {
@@ -225,8 +224,8 @@
                 {% for item in cart %}
                     <div class="row border-top border-bottom">
                         <div class="row main align-items-center">
-                            <div class="col-2">
-                                <img class="img-fluid" src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                            <div class="col-2" style="width: 115px;">
+                                <img class="img-fluid" src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="height: 100px; width: 100px;">
                             </div>
                             <div class="col">
                                 <div class="row text-muted">{{ item.product.name }}</div>
@@ -270,9 +269,8 @@
                     <img src="/media/uploads/products/cart1.png" alt="empty cart" style="width: 21.5rem; margin-left: 100px;">
                     {% endif %}
                     <div class="back-to-shop">
-                        <a href="{% url 'home' %}">
-                            ←
-                            <span class="text-muted"> Back to shop</span>
+                        <a href="javascript:void(0);" onclick="window.history.back();">←
+                            <span class="text-muted">  Back to product page</span></a>
                         </a>
                     </div>
                 </div>

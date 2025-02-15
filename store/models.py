@@ -48,3 +48,10 @@ class Order(models.Model):
 
     def __str__(self):
         return self.product
+
+
+class Image(models.Model):
+    url = models.URLField()
+
+    def __str__(self):
+        return self.url

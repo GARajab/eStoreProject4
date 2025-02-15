@@ -53,14 +53,14 @@ class Cart:
             cart[str(product.id)]["product"] = product
         for item in cart.values():
             item["price"] = Decimal(item["price"])
-            item["total_price"] = item["price"] * item["quantity"]
+            item["total_price"] = item["price"] * item["quantity"]  # Add 5 here
             yield item
 
     def cart_summary(request):
         cart = Cart(request)
         cart_items = []
         for item in cart:
-            total_price = (float(item["price"]) * item["quantity"]) + 5
+            total_price = float(item["price"]) * item["quantity"]
             item["total_price"] = total_price
             cart_items.append(item)
         return render(request, "cart_summary.html", {"cart": cart_items})

@@ -3,6 +3,9 @@ from .cart import Cart
 from store.models import Product
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+import logging
+from django.contrib.auth.decorators import login_required
 
 
 def cart_summary(request):
@@ -99,3 +102,32 @@ def input_view(request):
         response_message = f"You entered: {user_input}"  # Your processing logic here
         return JsonResponse({"message": response_message})
     return render(request, "myapp/index.html")
+
+
+def payment(request):
+    return render(request, "payment.html")
+
+
+@csrf_exempt
+@login_required
+def clear_cart(request):
+    if request.method == "POST":
+        # Clear the cart session
+        if "cart" in request.session:
+            del request.session["cart"]
+            request.session.modified = True
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "message": "Cart cleared successfully!",
+                    "cart_count": 0,
+                }
+            )
+        else:
+            return JsonResponse(
+                {"status": "error", "message": "Cart is already empty."}, status=400
+            )
+    else:
+        return JsonResponse(
+            {"status": "error", "message": "Invalid request method."}, status=405
+        )

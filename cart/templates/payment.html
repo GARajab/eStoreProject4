@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/mdb.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mdb.min.css.map' %}">
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+    <header>
+        <!-- Jumbotron -->
+        <div class="bg-primary">
+            <div class="container py-4">
+                <nav class="d-flex">
+                    <h6 class="mb-0">
+                        <a href="/" class="text-white-50">Home</a>
+                        <span class="text-white-50 mx-2"> ></span>
+                        <a href="/cart/" class="text-white-50">2. Shopping cart</a>
+                        <span class="text-white-50 mx-2"> ></span>
+                        <a href="checkout/" class="text-white-50">3. Order info</a>
+                        <span class="text-white">
+                            <u>4. Payment</u>
+                        </span>
+                    </h6>
+                </nav>
+            </div>
+        </div>
+    </header>
+    <section class="bg-light py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-8 col-lg-8 mb-4">
+                    <!-- Payment Form -->
+                    <form id="payment-form" >
+                        <div class="card shadow-0 border">
+                            <div class="p-4">
+                                <h5 class="card-title mb-3">Payment Details</h5>
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <p class="mb-0">Card Number</p>
+                                        <div class="form-outline">
+                                            <input
+                                                type="text"
+                                                id="cardNumber"
+                                                placeholder="1234 5678 9012 3456"
+                                                class="form-control"
+                                                style="border: 0.2px solid #b0b0b0"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <p class="mb-0">Expiry Date</p>
+                                        <div class="form-outline">
+                                            <input
+                                                type="text"
+                                                id="expiryDate"
+                                                placeholder="MM/YY"
+                                                class="form-control"
+                                                style="border: 0.2px solid #b0b0b0"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <p class="mb-0">CVV</p>
+                                        <div class="form-outline">
+                                            <input
+                                                type="text"
+                                                id="cvv"
+                                                placeholder="123"
+                                                class="form-control"
+                                                style="border: 0.2px solid #b0b0b0"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="float-end" style="margin-top: 160px;">
+                                    <button type="button" class="btn btn-light border">Cancel</button>
+                                    <button type="submit" class="btn btn-success shadow-0 border">Pay Now</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- Loading Spinner and Success Message -->
+                    <div id="loading-spinner" class="text-center hidden">
+                        <div class="spinner-border text-success" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Processing payment...</p>
+                    </div>
+                    <div id="success-message" class="text-center hidden">
+                        <h2 class="text-success">Payment Successful!</h2>
+                        <p>Thank you for your purchase.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="text-center text-lg-start text-muted bg-primary mt-3">
+        <!-- Footer content here -->
+    </footer>
+    <script src="{% static 'js/mdb.es.min.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+    <!-- MDB JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.0/mdb.min.js"></script>
+    <script>
+       document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("#payment-form");
+    const loadingSpinner = document.getElementById("loading-spinner");
+    const successMessage = document.getElementById("success-message");
+    const redirectUrl = '/';  // Replace with your actual home page URL
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent the form from submitting
+
+        // Show the loading spinner
+        loadingSpinner.classList.remove("hidden");
+
+        // Simulate a payment process with a 2-second delay
+        setTimeout(() => {
+            // Hide the loading spinner
+            loadingSpinner.classList.add("hidden");
+
+            // Show the success message
+            successMessage.classList.remove("hidden");
+
+            // Clear cart after payment
+            fetch('/clear_cart/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken') // CSRF token for Django
+                },
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error(response.statusText);
+                }
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('Cart cleared successfully!');
+                    // Update the cart count in the navbar
+                    updateCartCount(data.cart_count);
+                } else {
+                    console.error('Error clearing cart:', data.message);
+                }
+                // Redirect to home page after clearing cart
+                window.location.href = redirectUrl;
+            })
+            .catch(error => {
+                console.error('Error clearing cart:', error);
+                setTimeout(() => {
+                window.location.href = redirectUrl; // Redirect anyway
+                },2000)
+            });
+        }, 4000); // Simulate a 2-second delay
+    });
+
+    // Function to get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Function to update the cart count in the navbar
+    function updateCartCount(count) {
+        const cartCountElement = document.getElementById('cart_quantity');
+        if (cartCountElement) {
+            cartCountElement.textContent = count;
+        }
+    }
+});
+    </script>
+</body>
+</html>

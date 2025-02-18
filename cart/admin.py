@@ -1,23 +1,18 @@
 from django.contrib import admin
 from .models import Order, OrderItem
 
+# Unregister the existing Order model registration if you're modifying its admin interface
+admin.site.unregister(Order)
 
-class OrderItemInline(admin.TabularInline):  # or admin.StackedInline
+
+class OrderItemInline(admin.TabularInline):
     model = OrderItem
-    extra = 0  # Number of empty forms to display
+    extra = 0
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "user",
-        "total_price",
-        "status",
-        "created_at",
-    )  # Adjust fields as needed
-    inlines = [
-        OrderItemInline
-    ]  # This will display OrderItems inline in the Order admin page
+    list_display = ("id", "user", "total_price", "status", "created_at")
+    inlines = [OrderItemInline]
 
 
-admin.site.register(OrderItem)
+admin.site.register(Order, OrderAdmin)

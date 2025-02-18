@@ -1,10 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from .models import Category, Product
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .forms import RegisterForm, SignUpForm
 from django import forms
 import random
 
@@ -65,11 +64,10 @@ def category(request, rjb):
 
 
 def product(request, pk):
-    a = random.randint(1, 4)
-    print(a)
-    product = Product.objects.get(id=pk)
-    products = Product.objects.all()[1:4]
-    return render(request, "product.html", {"product": product, "products": products})
+
+    product = get_object_or_404(Product, id=pk)
+
+    return render(request, "product.html", {"product": product})
 
 
 def register(request):

@@ -1,22 +1,47 @@
-from django.shortcuts import redirect, render, get_object_or_404
-from .cart import Cart
-from store.models import Product
+# views.py
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponseBadRequest
-from django.contrib import messages
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
-import logging
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Order, OrderItem  # Import all models
+from store.models import Product  # Import the Product model
+from cart.cart import Cart  # Import the Cart class
+import logging
+from django.views.decorators.csrf import csrf_exempt
+
+
+logger = logging.getLogger(__name__)
 
 
 def cart_summary(request):
-    """Handles displaying the cart summary."""
     cart = Cart(request)
+    if request.method == "POST":
+        # Assuming you have some other way to get the shipping information
+        # e.g. POST data from the form
+        # We'll hardcode some shipping data for this example.  You'll likely want a model
+        # for user addresses or a form, even if it's not a Django Form class.
+        try:
+            order = Order.objects.create(
+                user=request.user,
+                total=cart.get_total_price(),
+                status=Order.STATUS_PENDING,
+                # Add shipping/billing info here, e.g.:
+                # shipping_address = request.POST.get('shipping_address', '')
+            )
+            for item in cart:
+                OrderItem.objects.create(
+                    order=order, product=item["product"], quantity=item["quantity"]
+                )
+            cart.clear()
+            print("Order created:", order)
+            return redirect("payment", order_id=order.id)  # Pass order.id to payment
+        except Exception as e:
+            print("Error creating order:", e)
+            # Handle the error appropriately, possibly redirect back to the cart.
+            return redirect("cart_summary")  # Or display an error message
+
+    # GET request or form not submitted:
     return render(request, "cart_summary.html", {"cart": cart})
-
-
-from django.shortcuts import get_object_or_404
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.contrib import messages
 
 
 def cart_add(request):
@@ -65,6 +90,10 @@ def cart_delete(request):
     return HttpResponseBadRequest("Invalid request method or missing action")
 
 
+def get_sub_total_price(self):
+    return sum(item.get_total_price() for item in self.cart.values())
+
+
 def cart_update(request):
     if request.method == "POST" and request.POST.get("action") == "post":
         product_id = request.POST.get("product_id")
@@ -92,20 +121,73 @@ def cart_update(request):
     return messages
 
 
+@login_required
 def checkout(request):
-    return render(request, "checkout.html")
+    cart = Cart(request)  # Instantiate cart at the beginning
+    if not cart:
+        messages.error(
+            request, "Your cart is empty.  Please add items before checking out."
+        )
+        return redirect("cart_summary")
 
-
-def input_view(request):
     if request.method == "POST":
-        user_input = request.POST.get("user_input")
-        response_message = f"You entered: {user_input}"  # Your processing logic here
-        return JsonResponse({"message": response_message})
-    return render(request, "myapp/index.html")
+        # Log the form data
+        logger.info("Form data received: %s", request.POST)
+
+        # Extract form data
+        first_name = request.POST.get("firstName")
+        last_name = request.POST.get("lastName")
+        phone = request.POST.get("phone")
+        email = request.POST.get("email")
+        shipping_method = request.POST.get("shippingMethod")
+        address = request.POST.get("address")
+        city = request.POST.get("city")
+        house = request.POST.get("house")
+        postal_code = request.POST.get("postalCode")
+        zip_code = request.POST.get("zip")
+        message_to_seller = request.POST.get("message")
+
+        # Create an order
+        try:
+            order = Order.objects.create(
+                user=request.user,
+                first_name=first_name,
+                last_name=last_name,
+                phone=phone,
+                email=email,
+                shipping_method=shipping_method,
+                address=address,
+                city=city,
+                house=house,
+                postal_code=postal_code,
+                zip_code=zip_code,
+                message_to_seller=message_to_seller,
+                total_price=cart.get_total_price(),
+            )
+            logger.info("Order created: %s", order)
+        except Exception as e:
+            logger.error("Error creating order: %s", str(e))
+            messages.error(request, "An error occurred while processing your order.")
+            return render(request, "checkout.html", {"cart": cart})
+
+        # Clear the cart after the order is created
+        cart.clear()  # Use cart.clear()
+        logger.info("Cart cleared after order creation.")
+
+        # Redirect to a success page or payment page
+        messages.success(request, "Order placed successfully!")
+        return redirect(
+            "payment", order_id=order.id
+        )  # Redirect to the payment page, pass order_id
+
+    # GET request: Render the checkout form
+    return render(request, "checkout.html", {"cart": cart})  # Pass cart to template
 
 
-def payment(request):
-    return render(request, "payment.html")
+@login_required
+def payment(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, "payment.html", {"order": order})
 
 
 @csrf_exempt

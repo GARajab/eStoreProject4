@@ -48,7 +48,7 @@
                         </div>
                         {% endif %}
                     <!-- Checkout Form -->
-<form action="{% url 'payment' %}" method="POST">
+<form action="{% url 'checkout' %}" method="POST">
     {% csrf_token %} <!-- Include this for security if using Django -->
     <div class="card shadow-0 border">
         <div class="p-4">

@@ -1,30 +1,34 @@
 # cart.py
-from django.conf import settings
 from decimal import Decimal
 
-from django.shortcuts import render
-from store.models import Product
+from store.models import Product  # Use Decimal for precise monetary calculations
 
 
 class Cart:
     def __init__(self, request):
+        self.request = request
         self.session = request.session
-        cart = self.session.get("cart", {})
+        cart = self.session.get("cart")
+        if not cart:
+            cart = self.session["cart"] = {}
         self.cart = cart
 
     def add(self, product, quantity=1, override_quantity=False):
-        product_id = str(product.id)
-        if product_id in self.cart:
-            if override_quantity:
-                self.cart[product_id]["quantity"] = quantity
-            else:
-                self.cart[product_id]["quantity"] += quantity
+        product_id = str(product.id)  # Convert to string for session keys
+        if product_id not in self.cart:
+            self.cart[product_id] = {
+                "quantity": 0,
+                "price": str(product.price),  # Store price as a string
+                "name": product.name,
+                "image": str(product.image),  # Assuming you have an image field
+            }
+        if override_quantity:
+            self.cart[product_id]["quantity"] = quantity
         else:
-            self.cart[product_id] = {"quantity": quantity, "price": str(product.price)}
+            self.cart[product_id]["quantity"] += quantity
         self.save()
 
     def save(self):
-        self.session["cart"] = self.cart
         self.session.modified = True
 
     def remove(self, product):
@@ -33,34 +37,27 @@ class Cart:
             del self.cart[product_id]
             self.save()
 
+    def __iter__(self):  # Iterate over items in the cart
+        product_ids = self.cart.keys()
+        # Retrieve product objects from the database using their IDs
+        products = Product.objects.filter(id__in=product_ids)  # Assuming Product model
+
+        cart = self.cart.copy()
+        for product in products:
+            cart[str(product.id)]["product"] = product  # Add the Product object
+        for item in cart.values():
+            item["price"] = Decimal(item["price"])  # Convert price back to Decimal
+            item["total_price"] = item["price"] * item["quantity"]
+            yield item
+
+    def __len__(self):
+        return sum(item["quantity"] for item in self.cart.values())
+
     def clear(self):
-        del self.session[settings.CART_SESSION_ID]
+        del self.session["cart"]
         self.save()
 
     def get_total_price(self):
         return sum(
             Decimal(item["price"]) * item["quantity"] for item in self.cart.values()
         )
-
-    def __len__(self):
-        return sum(item["quantity"] for item in self.cart.values())
-
-    def __iter__(self):
-        product_ids = self.cart.keys()
-        products = Product.objects.filter(id__in=product_ids)
-        cart = self.cart.copy()
-        for product in products:
-            cart[str(product.id)]["product"] = product
-        for item in cart.values():
-            item["price"] = Decimal(item["price"])
-            item["total_price"] = item["price"] * item["quantity"]  # Add 5 here
-            yield item
-
-    def cart_summary(request):
-        cart = Cart(request)
-        cart_items = []
-        for item in cart:
-            total_price = float(item["price"]) * item["quantity"]
-            item["total_price"] = total_price
-            cart_items.append(item)
-        return render(request, "cart_summary.html", {"cart": cart_items})

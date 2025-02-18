@@ -1,10 +1,9 @@
-# views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Order, OrderItem  # Import all models
-from store.models import Product  # Import the Product model
+from .models import Product  # Import the Product model
 from cart.cart import Cart  # Import the Cart class
 import logging
 from django.views.decorators.csrf import csrf_exempt
@@ -16,21 +15,18 @@ logger = logging.getLogger(__name__)
 def cart_summary(request):
     cart = Cart(request)
     if request.method == "POST":
-        # Assuming you have some other way to get the shipping information
-        # e.g. POST data from the form
-        # We'll hardcode some shipping data for this example.  You'll likely want a model
-        # for user addresses or a form, even if it's not a Django Form class.
         try:
             order = Order.objects.create(
                 user=request.user,
                 total=cart.get_total_price(),
                 status=Order.STATUS_PENDING,
-                # Add shipping/billing info here, e.g.:
-                # shipping_address = request.POST.get('shipping_address', '')
             )
             for item in cart:
                 OrderItem.objects.create(
-                    order=order, product=item["product"], quantity=item["quantity"]
+                    product_id=item["product_id"],
+                    order=order,
+                    product=item["product"],
+                    quantity=item["quantity"],
                 )
             cart.clear()
             print("Order created:", order)
@@ -134,7 +130,7 @@ def checkout(request):
         # Log the form data
         logger.info("Form data received: %s", request.POST)
 
-        # Extract form data
+        # Extract form data (as before)
         first_name = request.POST.get("firstName")
         last_name = request.POST.get("lastName")
         phone = request.POST.get("phone")
@@ -165,6 +161,31 @@ def checkout(request):
                 total_price=cart.get_total_price(),
             )
             logger.info("Order created: %s", order)
+
+            # Create OrderItems based on the cart content
+            for item in cart:
+                try:
+                    OrderItem.objects.create(
+                        order=order,
+                        product_id=item["product"].id,  # Use .id
+                        quantity=item["quantity"],
+                    )
+                    logger.info(
+                        f"OrderItem created: Product ID {item['product'].id}, Quantity {item['quantity']}"
+                    )
+
+                except Exception as item_error:
+                    logger.error(
+                        f"Error creating OrderItem for product ID {item.get('product_id', 'Unknown')}: {item_error}"
+                    )
+                    messages.error(
+                        request,
+                        f"An error occurred while adding product to your order. Please contact support.",
+                    )  # Provide user feedback.
+                    # Consider rolling back the order if an item fails.
+                    # order.delete()
+                    return render(request, "checkout.html", {"cart": cart})
+
         except Exception as e:
             logger.error("Error creating order: %s", str(e))
             messages.error(request, "An error occurred while processing your order.")
@@ -181,7 +202,9 @@ def checkout(request):
         )  # Redirect to the payment page, pass order_id
 
     # GET request: Render the checkout form
-    return render(request, "checkout.html", {"cart": cart})  # Pass cart to template
+    return render(
+        request, "checkout.html", {"cart": cart}
+    )  # Pass cart to template # Pass cart to template # Pass cart to template
 
 
 @login_required

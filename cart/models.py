@@ -1,5 +1,5 @@
 from django.db import models
-from store.models import Product
+from store.models import Product  # Import Product from your 'store' app
 from decimal import Decimal
 from django.contrib.auth.models import User
 
@@ -10,20 +10,14 @@ class Order(models.Model):
     last_name = models.CharField(max_length=100, blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
-    shipping_method = models.CharField(
-        max_length=100, blank=True, null=True
-    )  # Example field
+    shipping_method = models.CharField(max_length=100, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
     house = models.CharField(max_length=50, blank=True, null=True)
     postal_code = models.CharField(max_length=20, blank=True, null=True)
     zip_code = models.CharField(max_length=20, blank=True, null=True)
     message_to_seller = models.TextField(blank=True, null=True)
-    total_price = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0.00
-    )  # Consider a default.
-    # ... other fields like order date, status, etc.
-
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     STATUS_PENDING = "pending"
     STATUS_PROCESSING = "processing"
     STATUS_SHIPPED = "shipped"
@@ -36,13 +30,9 @@ class Order(models.Model):
         (STATUS_DELIVERED, "Delivered"),
         (STATUS_CANCELLED, "Cancelled"),
     ]
-
     status = models.CharField(
-        max_length=20,
-        choices=ORDER_STATUSES,
-        default=STATUS_PENDING,
+        max_length=20, choices=ORDER_STATUSES, default=STATUS_PENDING
     )
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -51,12 +41,13 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
+    order = models.ForeignKey(
+        Order, related_name="items", on_delete=models.CASCADE
+    )  # Corrected related_name
     product = models.ForeignKey(
         "store.Product", on_delete=models.CASCADE
-    )  # Assuming you have a Product model in 'store' app
+    )  # Assuming Product is in the 'store' app
     quantity = models.PositiveIntegerField(default=1)
-    # Add more fields as needed (e.g., unit price at the time of order)
 
     def __str__(self):
         return f"{self.product.name} x {self.quantity} in Order #{self.order.id}"

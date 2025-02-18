@@ -236,3 +236,13 @@ def clear_cart(request):
         return JsonResponse(
             {"status": "error", "message": "Invalid request method."}, status=405
         )
+
+
+def order_list(request):
+    if request.user.username != "mohamedrajab":
+        orders = Order.objects.filter(user=request.user)
+        # Display all orders
+    else:
+        orders = Order.objects.all()  # Filter by the user
+    context = {"orders": orders}
+    return render(request, "order_list.html", context)

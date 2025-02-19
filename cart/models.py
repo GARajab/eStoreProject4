@@ -1,6 +1,6 @@
 from django.db import models
 from django.shortcuts import render
-from store.models import Product  # Import Product from your 'store' app
+from store.models import Product  
 from decimal import Decimal
 from django.contrib.auth.models import User
 
@@ -42,7 +42,7 @@ class Order(models.Model):
 
     def get_total_orders(request):
 
-        total_orders = Order.objects.count()  # Get the total count
+        total_orders = Order.objects.count() 
 
         context = {
             "total_orders": total_orders,
@@ -53,10 +53,10 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(
         Order, related_name="items", on_delete=models.CASCADE
-    )  # Corrected related_name
+    )  
     product = models.ForeignKey(
         "store.Product", on_delete=models.CASCADE
-    )  # Assuming Product is in the 'store' app
+    ) 
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
@@ -66,15 +66,15 @@ class OrderItem(models.Model):
         return self.product.price * self.quantity
 
     def save(self, *args, **kwargs):
-        # Ensure the price is saved to the DB when a product is updated
-        if self.pk:  # If the instance already exists
+     
+        if self.pk:  
             old_quantity = OrderItem.objects.get(pk=self.pk).quantity
             if old_quantity != self.quantity:
                 self.order.total_price += self.product.price * (
                     self.quantity - old_quantity
                 )
-                self.order.save()  # Save the updated order total
-        super(OrderItem, self).save(*args, **kwargs)  # Call the "real" save() method.
+                self.order.save()  
+        super(OrderItem, self).save(*args, **kwargs)  
 
 
 class Cart(models.Model):

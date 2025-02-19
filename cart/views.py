@@ -30,13 +30,13 @@ def cart_summary(request):
                 )
             cart.clear()
             print("Order created:", order)
-            return redirect("payment", order_id=order.id)  # Pass order.id to payment
+            return redirect("payment", order_id=order.id) 
         except Exception as e:
             print("Error creating order:", e)
-            # Handle the error appropriately, possibly redirect back to the cart.
-            return redirect("cart_summary")  # Or display an error message
+          
+            return redirect("cart_summary") 
 
-    # GET request or form not submitted:
+   
     return render(request, "cart_summary.html", {"cart": cart})
 
 
@@ -45,7 +45,7 @@ def cart_add(request):
         product_id = int(request.POST.get("product_id"))
         quantity = int(
             request.POST.get("quantity", 1)
-        )  # Default to 1 if quantity is not provided
+        )  
         product = get_object_or_404(Product, id=product_id)
 
         cart = Cart(request)
@@ -80,8 +80,8 @@ def cart_delete(request):
         cart = Cart(request)
         cart.remove(product)
         messages.success(request, f"{product.name} has been removed from your cart.")
-        # Redirect to the cart view after deletion
-        return redirect("cart_summary")  # Change 'cart_detail' to your actual view name
+  
+        return redirect("cart_summary")  
 
     return HttpResponseBadRequest("Invalid request method or missing action")
 
@@ -110,8 +110,8 @@ def cart_update(request):
         cart = Cart(request)
         cart.add(product=product, quantity=quantity, override_quantity=True)
         messages.success(request, f"Updated {product.name} quantity to {quantity}.")
-        # Redirect to the cart view after update
-        return redirect("cart_summary")  # Change 'cart_detail' to your actual view name
+       
+        return redirect("cart_summary") 
 
     messages.success(request, "Invalid request method or missing action")
     return messages
@@ -119,7 +119,7 @@ def cart_update(request):
 
 @login_required
 def checkout(request):
-    cart = Cart(request)  # Instantiate cart at the beginning
+    cart = Cart(request) 
     if not cart:
         messages.error(
             request, "Your cart is empty.  Please add items before checking out."
@@ -127,10 +127,10 @@ def checkout(request):
         return redirect("cart_summary")
 
     if request.method == "POST":
-        # Log the form data
+        
         logger.info("Form data received: %s", request.POST)
 
-        # Extract form data (as before)
+    
         first_name = request.POST.get("firstName")
         last_name = request.POST.get("lastName")
         phone = request.POST.get("phone")
@@ -143,7 +143,7 @@ def checkout(request):
         zip_code = request.POST.get("zip")
         message_to_seller = request.POST.get("message")
 
-        # Create an order
+    
         try:
             order = Order.objects.create(
                 user=request.user,
@@ -162,12 +162,12 @@ def checkout(request):
             )
             logger.info("Order created: %s", order)
 
-            # Create OrderItems based on the cart content
+         
             for item in cart:
                 try:
                     OrderItem.objects.create(
                         order=order,
-                        product_id=item["product"].id,  # Use .id
+                        product_id=item["product"].id, 
                         quantity=item["quantity"],
                     )
                     logger.info(
@@ -181,9 +181,8 @@ def checkout(request):
                     messages.error(
                         request,
                         f"An error occurred while adding product to your order. Please contact support.",
-                    )  # Provide user feedback.
-                    # Consider rolling back the order if an item fails.
-                    # order.delete()
+                    ) 
+                   
                     return render(request, "checkout.html", {"cart": cart})
 
         except Exception as e:
@@ -191,20 +190,19 @@ def checkout(request):
             messages.error(request, "An error occurred while processing your order.")
             return render(request, "checkout.html", {"cart": cart})
 
-        # Clear the cart after the order is created
-        cart.clear()  # Use cart.clear()
+        
+        cart.clear()  
         logger.info("Cart cleared after order creation.")
 
-        # Redirect to a success page or payment page
+     
         messages.success(request, "Order placed successfully!")
         return redirect(
             "payment", order_id=order.id
-        )  # Redirect to the payment page, pass order_id
+        ) 
 
-    # GET request: Render the checkout form
     return render(
         request, "checkout.html", {"cart": cart}
-    )  # Pass cart to template # Pass cart to template # Pass cart to template
+    )
 
 
 @login_required
@@ -217,7 +215,7 @@ def payment(request, order_id):
 @login_required
 def clear_cart(request):
     if request.method == "POST":
-        # Clear the cart session
+       
         if "cart" in request.session:
             del request.session["cart"]
             request.session.modified = True
@@ -241,8 +239,8 @@ def clear_cart(request):
 def order_list(request):
     if request.user.username != "Admin":
         orders = Order.objects.filter(user=request.user)
-        # Display all orders
+    
     else:
-        orders = Order.objects.all()  # Filter by the user
+        orders = Order.objects.all() 
     context = {"orders": orders}
     return render(request, "order_list.html", context)

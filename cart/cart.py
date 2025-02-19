@@ -1,8 +1,7 @@
 # cart.py
 from decimal import Decimal
 
-from store.models import Product  # Use Decimal for precise monetary calculations
-
+from store.models import Product  
 
 class Cart:
     def __init__(self, request):
@@ -14,13 +13,13 @@ class Cart:
         self.cart = cart
 
     def add(self, product, quantity=1, override_quantity=False):
-        product_id = str(product.id)  # Convert to string for session keys
+        product_id = str(product.id)  
         if product_id not in self.cart:
             self.cart[product_id] = {
                 "quantity": 0,
-                "price": str(product.price),  # Store price as a string
+                "price": str(product.price),  
                 "name": product.name,
-                "image": str(product.image),  # Assuming you have an image field
+                "image": str(product.image),  
             }
         if override_quantity:
             self.cart[product_id]["quantity"] = quantity
@@ -37,16 +36,16 @@ class Cart:
             del self.cart[product_id]
             self.save()
 
-    def __iter__(self):  # Iterate over items in the cart
+    def __iter__(self): 
         product_ids = self.cart.keys()
-        # Retrieve product objects from the database using their IDs
-        products = Product.objects.filter(id__in=product_ids)  # Assuming Product model
+       
+        products = Product.objects.filter(id__in=product_ids)  
 
         cart = self.cart.copy()
         for product in products:
-            cart[str(product.id)]["product"] = product  # Add the Product object
+            cart[str(product.id)]["product"] = product
         for item in cart.values():
-            item["price"] = Decimal(item["price"])  # Convert price back to Decimal
+            item["price"] = Decimal(item["price"]) 
             item["total_price"] = item["price"] * item["quantity"]
             yield item
 

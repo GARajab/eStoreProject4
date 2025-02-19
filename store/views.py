@@ -3,7 +3,6 @@ from .models import Category, Product
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
 from django import forms
 import random
 from cart.models import Order
@@ -22,9 +21,12 @@ def about(request):
 def AdminPanel(request):
     total_orders = Order.objects.count()
     total_revenue = Order.objects.aggregate(total=Sum("total_price"))["total"] or 0
+    num_users = User.objects.count()
+
     context = {
         "total_orders": total_orders,
         "total_revenue": total_revenue,
+        "total_users": num_users,
     }
     return render(request, "adminPanel/index.html", context)
 

@@ -1,4 +1,5 @@
 from django.db import models
+from django.shortcuts import render
 from store.models import Product  # Import Product from your 'store' app
 from decimal import Decimal
 from django.contrib.auth.models import User

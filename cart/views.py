@@ -239,7 +239,7 @@ def clear_cart(request):
 
 
 def order_list(request):
-    if request.user.username != "mohamedrajab":
+    if request.user.username != "Admin":
         orders = Order.objects.filter(user=request.user)
         # Display all orders
     else:

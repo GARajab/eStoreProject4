@@ -39,6 +39,15 @@ class Order(models.Model):
     def __str__(self):
         return f"Order #{self.id} - {self.user.username}"
 
+    def get_total_orders(request):
+
+        total_orders = Order.objects.count()  # Get the total count
+
+        context = {
+            "total_orders": total_orders,
+        }
+        return render(request, "total_orders.html", context)
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(

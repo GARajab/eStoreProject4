@@ -7,7 +7,9 @@
             <img src="/media/uploads/products/whiteWithBlackAppleLogo.png" alt="Apple Logo" style="max-width: 10%;">
             <h1 class="display-4 fw-bolder">Apple Store</h1>
             <p class="lead fw-normal text-white-50 mb-0">All Apple Products Under One Roof</p>
+            {% if user.is_authenticated %}
             <h6>Welcome {{user.username}}</h6>
+            {% endif %}
         </div>
     </div>
 </header>

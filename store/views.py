@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 import random
+from cart.models import Order
+from django.db.models import Sum
 
 
 def home(request):
@@ -15,6 +17,16 @@ def home(request):
 
 def about(request):
     return render(request, "about.html", {})
+
+
+def AdminPanel(request):
+    total_orders = Order.objects.count()
+    total_revenue = Order.objects.aggregate(total=Sum("total_price"))["total"] or 0
+    context = {
+        "total_orders": total_orders,
+        "total_revenue": total_revenue,
+    }
+    return render(request, "adminPanel/index.html", context)
 
 
 def login_user(request):

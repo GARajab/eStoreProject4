@@ -15,6 +15,7 @@ SECRET_KEY = "django-insecure-d@imq^#n@*^n@o3l9*bf1zouxdio@lll+n2m8$@)@11)ucig#9
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["https://estoreproject4-production.up.railway.app"]
 
 # Application definition
 

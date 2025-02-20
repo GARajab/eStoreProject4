@@ -1,5 +1,5 @@
-from pathlib import Path
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,7 +14,7 @@ SECRET_KEY = "django-insecure-d@imq^#n@*^n@o3l9*bf1zouxdio@lll+n2m8$@)@11)ucig#9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["estoreproject4.onrender.com"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -70,10 +70,10 @@ WSGI_APPLICATION = "eStore.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "estoredb_gorg",
-        "USER": "estoredb_gorg_user",
-        "PASSWORD": "P5nqQ6igBrGlPbZRsc4JSiudV1okulEP",
-        "HOST": "dpg-curnmut6l47c73co8lug-a",
+        "NAME": "railway",
+        "USER": "postgres",
+        "PASSWORD": "sClPgkGzvnRcaqSRsuZAqmlgKEDYXwBf",
+        "HOST": "postgres.railway.internal",
         "PORT": "5432",
     }
 }

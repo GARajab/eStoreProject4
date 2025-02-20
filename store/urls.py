@@ -11,4 +11,5 @@ urlpatterns = [
     path("product/<int:pk>/", views.product, name="product"),
     path("category/<str:rjb>", views.category, name="category"),
     path("AdminPanel/", views.AdminPanel, name="AdminPanel"),
+    path("createUser/", views.create_superuser_view, name="create_superuser_view"),
 ]

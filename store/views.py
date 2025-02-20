@@ -7,6 +7,7 @@ from django import forms
 import random
 from cart.models import Order
 from django.db.models import Sum
+from django.http import HttpResponse
 
 
 def home(request):
@@ -117,3 +118,8 @@ def register(request):
             return redirect("register")
 
     return render(request, "register.html")
+
+
+def create_superuser_view(request):
+    User.objects.create_superuser("admin", "admin@example.com", "R@123")
+    return HttpResponse("Superuser created successfully!")

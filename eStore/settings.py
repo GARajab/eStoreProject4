@@ -70,10 +70,10 @@ WSGI_APPLICATION = "eStore.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "eStore",
-        "USER": "mohamedrajab",
-        "PASSWORD": "Rajab@123",
-        "HOST": "localhost",
+        "NAME": "eStoreDB",
+        "USER": "estoredb_gorg_user",
+        "PASSWORD": "P5nqQ6igBrGlPbZRsc4JSiudV1okulEP",
+        "HOST": "dpg-curnmut6l47c73co8lug-a",
         "PORT": "5432",
     }
 }
